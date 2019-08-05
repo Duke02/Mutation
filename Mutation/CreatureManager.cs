@@ -21,6 +21,10 @@ namespace Mutation
         /// </summary>
         private Dictionary<int, Creature> _trackedCreatures;
 
+        /// <summary>
+        /// The base constructor for the Creature Manager.
+        /// </summary>
+        /// <param name="random">The random number generator for all creatures to use.</param>
         public CreatureManager(Random random)
         {
             _creatures = new List<Creature>();
@@ -43,6 +47,10 @@ namespace Mutation
             return _creatures.Count(creature => creature.IsAlive && creature.Id == id);
         }
 
+        /// <summary>
+        /// Gets a list of the ids of all creatures that are being tracked.
+        /// </summary>
+        /// <returns></returns>
         public List<int> GetTrackedIds()
         {
             return _trackedCreatures.Keys.ToList();
@@ -61,6 +69,10 @@ namespace Mutation
             }
         }
 
+        /// <summary>
+        /// Adds a creature to the simulation.
+        /// </summary>
+        /// <param name="creature">The creature to be added.</param>
         public void AddCreatureToSimulation(Creature creature)
         {
             if (!_trackedCreatures.ContainsKey(creature.Id))

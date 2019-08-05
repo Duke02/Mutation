@@ -4,9 +4,19 @@ namespace Mutation
 {
     class Simulation
     {
+        /// <summary>
+        /// The object that manages every creature.
+        /// </summary>
         private CreatureManager _creatureManager;
+
+        /// <summary>
+        /// The random number generator that each object in the simulation is to use.
+        /// </summary>
         private Random _random;
 
+        /// <summary>
+        /// The base constructor for the Simulation.
+        /// </summary>
         public Simulation()
         {
             _random = new Random();
@@ -36,6 +46,10 @@ namespace Mutation
             _creatureManager.AddCreatureToTrack(creature4);
         }
 
+        /// <summary>
+        /// Prints the stats for the simulation at the given trial number.
+        /// </summary>
+        /// <param name="trialNumber">The current trial number within the simulation.</param>
         public void PrintStats(int trialNumber)
         {
             var totalCreatures = _creatureManager.TotalNumberOfCreatures;
@@ -59,11 +73,18 @@ namespace Mutation
             }
         }
 
+        /// <summary>
+        /// Updates each object within the simulation.
+        /// </summary>
         public void Update()
         {
             _creatureManager.Update();
         }
 
+        /// <summary>
+        /// Returns true if there is no living creature in the simulation.
+        /// </summary>
+        /// <returns></returns>
         public bool AreAllCreaturesDead()
         {
             return _creatureManager.TotalNumberOfCreatures == 0;
