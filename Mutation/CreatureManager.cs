@@ -80,6 +80,8 @@ namespace Mutation
             var creaturesToRemove = new List<Creature>();
             var creaturesToAdd = new List<Creature>();
 
+            creaturesToAdd.AddRange(SpawnCreatures());
+
             foreach (var creature in _creatures)
             {
                 var result = creature.Update();
@@ -105,7 +107,7 @@ namespace Mutation
                 // If the creature mutated,
                 else
                 {
-                    creaturesToAdd.Add(SpawnNewCreature(result));
+                    creaturesToAdd.Add(CreateNewCreature(result));
                 }
             }
 
@@ -118,7 +120,7 @@ namespace Mutation
         /// </summary>
         /// <param name="idOfCreature">The id for the creature.</param>
         /// <returns>The generated creature if the id was being tracked.</returns>
-        private Creature SpawnNewCreature(int idOfCreature)
+        private Creature CreateNewCreature(int idOfCreature)
         {
             if (!_trackedCreatures.ContainsKey(idOfCreature))
             {
@@ -127,6 +129,32 @@ namespace Mutation
 
             var trackedCreature = _trackedCreatures[idOfCreature];
             return new Creature(trackedCreature);
+        }
+
+        /// <summary>
+        /// Spawns creatures that can be born spontaneously (a creature that comes into existence without a prior creature).
+        /// </summary>
+        /// <returns>A list of all newly spawned creatures.</returns>
+        private List<Creature> SpawnCreatures()
+        {
+            var spontaneousCreatures = _trackedCreatures.Values.Where(creature => creature.BirthChance > 0).ToList();
+            var totalBirthRates = spontaneousCreatures.Sum(creature => creature.BirthChance);
+
+            var output = new List<Creature>();
+
+            var roll = _random.NextDouble() * totalBirthRates;
+
+            foreach (var creature in spontaneousCreatures)
+            {
+                if (creature.BirthChance > roll)
+                {
+                    output.Add(CreateNewCreature(creature.Id));
+                }
+
+                roll -= creature.BirthChance;
+            }
+
+            return output;
         }
     }
 }
