@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 
 namespace Mutation
 {
@@ -125,6 +126,11 @@ namespace Mutation
 
             _creatures.RemoveAll(creature => creaturesToRemove.Contains(creature));
             _creatures.AddRange(creaturesToAdd);
+        }
+
+        public void LoadFromJson(string filename)
+        {
+            var deserializer = JsonConvert.DeserializeObject(filename);
         }
 
         /// <summary>

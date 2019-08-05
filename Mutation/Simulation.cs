@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using Newtonsoft.Json;
 
 namespace Mutation
 {
@@ -92,8 +95,7 @@ namespace Mutation
 
         public static void Main(string[] args)
         {
-            var simulation = new Simulation();
-
+            /*var simulation = new Simulation();
             simulation.AddCreatures(5);
 
             var totalRounds = 100;
@@ -107,6 +109,24 @@ namespace Mutation
 
                 simulation.Update();
                 simulation.PrintStats(i);
+            }*/
+
+            using (var file = File.OpenText("creatures.json"))
+            {
+                var serializer = new JsonSerializer();
+
+                var creatures = serializer.Deserialize<List<Creature>>(new JsonTextReader(file));
+
+                foreach (var creature in creatures)
+                {
+                    Console.Out.WriteLine(
+                        $"Creature {creature.Id}: Birth {creature.BirthChance} Death {creature.DeathChance} Replication {creature.ReplicationChance}");
+                    Console.Out.WriteLine($"Mutations:");
+                    foreach (var mutationChance in creature.MutationChances)
+                    {
+                        Console.Out.WriteLine($"\t{mutationChance.Key}: {mutationChance.Value}");
+                    }
+                }
             }
         }
     }
