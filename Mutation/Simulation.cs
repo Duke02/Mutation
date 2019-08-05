@@ -5,10 +5,12 @@ namespace Mutation
     class Simulation
     {
         private CreatureManager _creatureManager;
+        private Random _random;
 
         public Simulation()
         {
-            _creatureManager = new CreatureManager();
+            _random = new Random();
+            _creatureManager = new CreatureManager(_random);
         }
 
         /// <summary>

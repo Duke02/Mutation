@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -11,14 +12,20 @@ namespace Mutation
         private List<Creature> _creatures;
 
         /// <summary>
+        /// The random number generator each Creature will have a reference to.
+        /// </summary>
+        private Random _random;
+
+        /// <summary>
         /// The base creature models that this simulation is tracking.
         /// </summary>
         private Dictionary<int, Creature> _trackedCreatures;
 
-        public CreatureManager()
+        public CreatureManager(Random random)
         {
             _creatures = new List<Creature>();
             _trackedCreatures = new Dictionary<int, Creature>();
+            _random = random;
         }
 
         /// <summary>
@@ -49,6 +56,7 @@ namespace Mutation
         {
             if (!_trackedCreatures.ContainsKey(creature.Id))
             {
+                creature.RandomGenerator = _random;
                 _trackedCreatures.Add(creature.Id, creature);
             }
         }
@@ -60,6 +68,7 @@ namespace Mutation
                 AddCreatureToTrack(creature);
             }
 
+            creature.RandomGenerator = _random;
             _creatures.Add(creature);
         }
 
