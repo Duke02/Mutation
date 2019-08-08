@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
 
@@ -128,9 +129,15 @@ namespace Mutation
             _creatures.AddRange(creaturesToAdd);
         }
 
-        public void LoadFromJson(string filename)
+        public void LoadFromJson(StreamReader streamReader)
         {
-            var deserializer = JsonConvert.DeserializeObject(filename);
+            var serializer = new JsonSerializer();
+            var creatures = serializer.Deserialize<List<Creature>>(new JsonTextReader(streamReader));
+
+            foreach (var creature in creatures)
+            {
+                AddCreatureToTrack(creature);
+            }
         }
 
         /// <summary>

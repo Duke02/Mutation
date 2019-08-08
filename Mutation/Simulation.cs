@@ -1,17 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using Newtonsoft.Json;
 
 namespace Mutation
 {
     class Simulation
     {
-        /// <summary>
-        /// The object that manages every creature.
-        /// </summary>
-        private CreatureManager _creatureManager;
-
         /// <summary>
         /// The random number generator that each object in the simulation is to use.
         /// </summary>
@@ -23,8 +16,13 @@ namespace Mutation
         public Simulation()
         {
             _random = new Random();
-            _creatureManager = new CreatureManager(_random);
+            CreatureManager = new CreatureManager(_random);
         }
+
+        /// <summary>
+        /// The object that manages every creature.
+        /// </summary>
+        public CreatureManager CreatureManager { get; private set; }
 
         /// <summary>
         /// Adds starting creatures to the creature manager.
@@ -43,10 +41,10 @@ namespace Mutation
 
             creature3.AddMutation(1, 0.05);
 
-            _creatureManager.AddCreatureToTrack(creature1);
-            _creatureManager.AddCreatureToTrack(creature2);
-            _creatureManager.AddCreatureToTrack(creature3);
-            _creatureManager.AddCreatureToTrack(creature4);
+            CreatureManager.AddCreatureToTrack(creature1);
+            CreatureManager.AddCreatureToTrack(creature2);
+            CreatureManager.AddCreatureToTrack(creature3);
+            CreatureManager.AddCreatureToTrack(creature4);
         }
 
         /// <summary>
@@ -55,7 +53,7 @@ namespace Mutation
         /// <param name="trialNumber">The current trial number within the simulation.</param>
         public void PrintStats(int trialNumber)
         {
-            var totalCreatures = _creatureManager.TotalNumberOfCreatures;
+            var totalCreatures = CreatureManager.TotalNumberOfCreatures;
 
             if (totalCreatures == 0)
             {
@@ -64,11 +62,11 @@ namespace Mutation
             }
 
             Console.Out.WriteLine($"==Trial #{trialNumber}==");
-            var ids = _creatureManager.GetTrackedIds();
+            var ids = CreatureManager.GetTrackedIds();
 
             foreach (var id in ids)
             {
-                var creaturesOfType = _creatureManager.CountOfCreatures(id);
+                var creaturesOfType = CreatureManager.CountOfCreatures(id);
                 var percentageOfPopulation = (double) creaturesOfType / totalCreatures;
 
                 Console.Out.WriteLine(
@@ -81,7 +79,7 @@ namespace Mutation
         /// </summary>
         public void Update()
         {
-            _creatureManager.Update();
+            CreatureManager.Update();
         }
 
         /// <summary>
@@ -90,15 +88,27 @@ namespace Mutation
         /// <returns></returns>
         public bool AreAllCreaturesDead()
         {
-            return _creatureManager.TotalNumberOfCreatures == 0;
+            return CreatureManager.TotalNumberOfCreatures == 0;
         }
 
         public static void Main(string[] args)
         {
-            /*var simulation = new Simulation();
-            simulation.AddCreatures(5);
+            var simulation = new Simulation();
 
-            var totalRounds = 100;
+            try
+            {
+                using (var file = File.OpenText("creatures.json"))
+                {
+                    simulation.CreatureManager.LoadFromJson(file);
+                }
+            }
+            catch (Exception)
+            {
+                Console.Out.WriteLine("Error loading creatures from file. Will just add simulation creatures.");
+                simulation.AddCreatures(5);
+            }
+
+            const int totalRounds = 100;
 
             for (var i = 1; i <= totalRounds; i++)
             {
@@ -109,24 +119,6 @@ namespace Mutation
 
                 simulation.Update();
                 simulation.PrintStats(i);
-            }*/
-
-            using (var file = File.OpenText("creatures.json"))
-            {
-                var serializer = new JsonSerializer();
-
-                var creatures = serializer.Deserialize<List<Creature>>(new JsonTextReader(file));
-
-                foreach (var creature in creatures)
-                {
-                    Console.Out.WriteLine(
-                        $"Creature {creature.Id}: Birth {creature.BirthChance} Death {creature.DeathChance} Replication {creature.ReplicationChance}");
-                    Console.Out.WriteLine($"Mutations:");
-                    foreach (var mutationChance in creature.MutationChances)
-                    {
-                        Console.Out.WriteLine($"\t{mutationChance.Key}: {mutationChance.Value}");
-                    }
-                }
             }
         }
     }
